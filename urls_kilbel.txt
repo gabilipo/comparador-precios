@@ -1,0 +1,9 @@
+# Una URL por línea. Las que empiezan con # se ignoran.
+# Mantener pocas categorías: Kilbel autorizó "pocas consultas diarias".
+https://www.kilbelonline.com/almacen/infusiones/yerba-mate/n3_1131/
+https://www.kilbelonline.com/almacen/endulzantes/azucar/n3_1102/
+https://www.kilbelonline.com/almacen/aceites-vinagres-y-aderezos/aceites-y-grasas/n3_1099/
+https://www.kilbelonline.com/lacteos/leches/n2_1060/
+https://www.kilbelonline.com/panificados/pan/n2_1016/
+https://www.kilbelonline.com/bebidas/cervezas/n2_1030/
+https://www.kilbelonline.com/bebidas/aperitivos/fernet/n3_1079/
