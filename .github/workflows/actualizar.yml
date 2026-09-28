@@ -1,0 +1,29 @@
+name: Actualizar precios
+ 
+on:
+  schedule:
+    - cron: "0 9 * * *"   # 9:00 UTC = 6:00 de la mañana en Argentina
+  workflow_dispatch:       # permite ejecutarlo a mano con un botón
+ 
+permissions:
+  contents: write
+ 
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependencias
+        run: pip install requests beautifulsoup4
+      - name: Leer precios de Kilbel
+        run: python kilbel.py
+      - name: Guardar resultados
+        run: |
+          git config user.name "actualizador-precios"
+          git config user.email "actions@users.noreply.github.com"
+          git add datos
+          git commit -m "Actualización de precios" || echo "Sin cambios"
+          git push
