@@ -38,14 +38,14 @@ AUTORIZACION_KILBEL = True
 
 ART_RE = re.compile(r"/art_(\d+)/?")
 PRECIO_RE = re.compile(r"\$\s*([\d.,]+)")
-UNIDAD_RE = re.compile(r"Precio x\s+([^:\n]+):\s*\$\s*([\d.,]+)", re.I)
+UNIDAD_RE = re.compile(r"Precio\s+(?:x|por)\s+([^:\n]+):\s*\$\s*([\d.,]+)", re.I)
 SIN_IMP_RE = re.compile(r"Prec\.s/Imp\.Nac\.:\s*\$\s*([\d.,]+)", re.I)
 PROMO_RE = re.compile(r"Llevando\s+(\d+)", re.I)
 
 CAMPOS = [
     "fecha", "super", "id", "nombre", "precio_lista", "precio_actual",
     "unidad_ref", "precio_unidad", "precio_sin_imp", "promo_llevando",
-    "sin_stock", "url",
+    "url",
 ]
 
 
@@ -97,15 +97,15 @@ def parsear_pagina(html, url_base=BASE):
             if ART_RE.search(a["href"]) and a.get_text(strip=True):
                 nombre = a.get_text(strip=True)
                 break
-        if not nombre:
-            continue
+        if not nombre or nombre.lower().startswith(("envase", "copa ")):
+            continue  # envases retornables y vasos no son el producto a comparar
 
         # Precios: todo lo que aparece antes de "Precio x ..." (lista y actual)
         unidad = UNIDAD_RE.search(texto)
         zona_precios = texto[: unidad.start()] if unidad else texto.split("Prec.s/Imp")[0]
         precios = [a_numero(p) for p in PRECIO_RE.findall(zona_precios)]
-        if not precios:
-            continue
+        if not precios or max(precios) >= 99999:
+            continue  # sin precio, o precio "de relleno" del sitio (99999)
 
         sin_imp = SIN_IMP_RE.search(texto)
         promo = PROMO_RE.search(texto)
@@ -118,7 +118,6 @@ def parsear_pagina(html, url_base=BASE):
             "precio_unidad": a_numero(unidad.group(2)) if unidad else None,
             "precio_sin_imp": a_numero(sin_imp.group(1)) if sin_imp else None,
             "promo_llevando": int(promo.group(1)) if promo else None,
-            "sin_stock": "sin stock" in texto.lower(),
             "url": urljoin(url_base, enlace["href"]),
         }
     return list(productos.values())
